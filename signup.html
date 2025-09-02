@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - API Catalyst</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="auth-container">
+            <div class="auth-header">
+                <div class="auth-brand">
+                    <div class="auth-logo">
+                        <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <h1 class="auth-title">API Catalyst</h1>
+                </div>
+                <p class="auth-subtitle">Create your account and start caching</p>
+            </div>
+
+            <div class="auth-card">
+                <div class="card-header">
+                    <h2 class="card-title">Get started</h2>
+                    <p class="card-description">
+                        Join thousands of developers already using API Catalyst
+                    </p>
+                </div>
+                <div class="card-content">
+                    <form class="auth-form">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input
+                                id="name"
+                                name="name"
+                                type="text"
+                                placeholder="Enter your full name"
+                                class="form-input"
+                                required
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                placeholder="Enter your email"
+                                class="form-input"
+                                required
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">Password</label>
+                            <div class="form-input-container">
+                                <input
+                                    id="password"
+                                    name="password"
+                                    type="password"
+                                    placeholder="Create a password"
+                                    class="form-input"
+                                    required
+                                />
+                            </div>
+                        </div>
+                        <a href="success.html" class="btn btn-primary btn-full">
+                            Create Account
+                        </a>
+                    </form>
+                    <div class="auth-footer">
+                        <p class="auth-text">
+                            Already have an account?
+                            <a href="login.html" class="auth-link">Sign in</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-back">
+                <a href="index.html" class="back-link">← Back to home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

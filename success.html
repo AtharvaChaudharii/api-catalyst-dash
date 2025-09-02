@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome - API Catalyst</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="auth-page">
+        <div class="success-container">
+            <div class="auth-header">
+                <div class="auth-brand">
+                    <div class="auth-logo">
+                        <svg class="auth-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                    </div>
+                    <h1 class="auth-title">API Catalyst</h1>
+                </div>
+            </div>
+
+            <div class="success-card">
+                <div class="card-header success-header">
+                    <div class="success-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                        </svg>
+                    </div>
+                    <h2 class="card-title">Welcome to API Catalyst!</h2>
+                    <p class="card-description">
+                        Your account has been created successfully. Here's your API key to get started.
+                    </p>
+                </div>
+                <div class="card-content">
+                    <div class="api-key-section">
+                        <h3 class="api-key-title">Your API Key</h3>
+                        <div class="api-key-container">
+                            <code class="api-key">ak_live_1234567890abcdef1234567890abcdef</code>
+                            <button class="btn btn-copy" title="Copy API Key">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                    <path d="m5 15-4-4 4-4"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="api-key-note">
+                            Keep this key secure! You'll need it to authenticate your API requests.
+                        </p>
+                    </div>
+
+                    <div class="quick-start">
+                        <h3 class="quick-start-title">
+                            <svg class="quick-start-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="4,17 10,11 4,5"></polyline>
+                                <line x1="12" y1="19" x2="20" y2="19"></line>
+                            </svg>
+                            Quick Start
+                        </h3>
+                        <div class="code-block">
+                            <p class="code-label">Install the SDK:</p>
+                            <code class="code">npm install @api-catalyst/sdk</code>
+                            <p class="code-label">Initialize in your code:</p>
+                            <code class="code">const catalyst = new APICatalyst('ak_live_1234567890abcdef1234567890abcdef');</code>
+                        </div>
+                    </div>
+
+                    <div class="success-buttons">
+                        <a href="dashboard.html" class="btn btn-primary btn-flex">
+                            Go to Dashboard
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                <polyline points="12,5 19,12 12,19"></polyline>
+                            </svg>
+                        </a>
+                        <a href="#" class="btn btn-outline btn-flex">
+                            View Documentation
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="auth-back">
+                <a href="index.html" class="back-link">← Back to home</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

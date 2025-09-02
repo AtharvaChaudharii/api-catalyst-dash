@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - API Catalyst</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+                <h1 class="sidebar-title">API Catalyst</h1>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="dashboard.html" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9,22 9,12 15,12 15,22"></polyline>
+                            </svg>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="analytics.html" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            Analytics
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="logs.html" class="nav-link">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14,2 14,8 20,8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                                <polyline points="10,9 9,9 8,9"></polyline>
+                            </svg>
+                            Logs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="settings.html" class="nav-link active">
+                            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="m12 1 0 6m0 6 0 6m11-7-6 0m-6 0-6 0"></path>
+                            </svg>
+                            Settings
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </div>
+                    <div class="user-details">
+                        <p class="user-name">John Doe</p>
+                        <p class="user-email">john@example.com</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <header class="header">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-description">Manage your account and API configuration</p>
+            </header>
+
+            <main class="content">
+                <div class="settings-grid">
+                    <!-- Profile Settings -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Profile Information</h2>
+                            <p class="card-description">Update your personal details and preferences</p>
+                        </div>
+                        <div class="card-content">
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="name" class="form-label">Full Name</label>
+                                    <input
+                                        id="name"
+                                        name="name"
+                                        type="text"
+                                        value="John Doe"
+                                        class="form-input"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" class="form-label">Email Address</label>
+                                    <input
+                                        id="email"
+                                        name="email"
+                                        type="email"
+                                        value="john@example.com"
+                                        class="form-input"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <label for="company" class="form-label">Company</label>
+                                    <input
+                                        id="company"
+                                        name="company"
+                                        type="text"
+                                        value="Acme Corp"
+                                        class="form-input"
+                                    />
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Update Profile
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- API Keys -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <h2 class="card-title">API Keys</h2>
+                            <p class="card-description">Manage your API authentication keys</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="api-keys-list">
+                                <div class="api-key-item">
+                                    <div class="api-key-info">
+                                        <h3 class="api-key-name">Production Key</h3>
+                                        <code class="api-key-value">ak_live_**********************abcdef</code>
+                                        <p class="api-key-created">Created: Jan 15, 2024</p>
+                                    </div>
+                                    <div class="api-key-actions">
+                                        <button class="btn btn-outline btn-sm">Copy</button>
+                                        <button class="btn btn-outline btn-sm">Regenerate</button>
+                                    </div>
+                                </div>
+                                <div class="api-key-item">
+                                    <div class="api-key-info">
+                                        <h3 class="api-key-name">Development Key</h3>
+                                        <code class="api-key-value">ak_test_**********************xyz123</code>
+                                        <p class="api-key-created">Created: Jan 10, 2024</p>
+                                    </div>
+                                    <div class="api-key-actions">
+                                        <button class="btn btn-outline btn-sm">Copy</button>
+                                        <button class="btn btn-outline btn-sm">Regenerate</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                Create New Key
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Cache Configuration -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Cache Configuration</h2>
+                            <p class="card-description">Configure default caching behavior</p>
+                        </div>
+                        <div class="card-content">
+                            <form class="settings-form">
+                                <div class="form-group">
+                                    <label for="ttl" class="form-label">Default TTL (seconds)</label>
+                                    <input
+                                        id="ttl"
+                                        name="ttl"
+                                        type="number"
+                                        value="3600"
+                                        class="form-input"
+                                    />
+                                    <p class="form-help">How long cache entries should be stored by default</p>
+                                </div>
+                                <div class="form-group">
+                                    <label for="max-size" class="form-label">Max Cache Size (MB)</label>
+                                    <input
+                                        id="max-size"
+                                        name="max-size"
+                                        type="number"
+                                        value="1024"
+                                        class="form-input"
+                                    />
+                                </div>
+                                <div class="form-group">
+                                    <div class="toggle-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" class="toggle-input" checked />
+                                            <span class="toggle-switch"></span>
+                                            <span class="toggle-text">Enable automatic cache invalidation</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="toggle-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" class="toggle-input" />
+                                            <span class="toggle-switch"></span>
+                                            <span class="toggle-text">Use distributed locking strategy</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary">
+                                    Save Configuration
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Notifications</h2>
+                            <p class="card-description">Configure alert preferences</p>
+                        </div>
+                        <div class="card-content">
+                            <div class="notification-settings">
+                                <div class="notification-item">
+                                    <div class="notification-info">
+                                        <h3 class="notification-title">Rate Limit Alerts</h3>
+                                        <p class="notification-description">Get notified when approaching rate limits</p>
+                                    </div>
+                                    <div class="toggle-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" class="toggle-input" checked />
+                                            <span class="toggle-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-info">
+                                        <h3 class="notification-title">Performance Alerts</h3>
+                                        <p class="notification-description">Alerts for unusual latency or error rates</p>
+                                    </div>
+                                    <div class="toggle-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" class="toggle-input" checked />
+                                            <span class="toggle-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="notification-item">
+                                    <div class="notification-info">
+                                        <h3 class="notification-title">Weekly Reports</h3>
+                                        <p class="notification-description">Weekly summary of your API performance</p>
+                                    </div>
+                                    <div class="toggle-group">
+                                        <label class="toggle-label">
+                                            <input type="checkbox" class="toggle-input" />
+                                            <span class="toggle-switch"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
