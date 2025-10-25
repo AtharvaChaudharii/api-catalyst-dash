@@ -42,7 +42,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const isActive = (href: string) => location.pathname === href;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen bg-background">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
@@ -52,7 +52,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       )}
 
       {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:static lg:inset-0`}>
+      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gradient-card border-r border-border transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:relative lg:inset-0`}>
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center gap-3 p-6 border-b border-border">
@@ -120,7 +120,7 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
       </div>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="flex-1">
         {/* Top bar */}
         <header className="bg-background border-b border-border px-4 lg:px-6 h-16 flex items-center justify-between">
           <Button
