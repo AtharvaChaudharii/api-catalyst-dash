@@ -1,4 +1,4 @@
-import type { UserSchema } from "../types.ts";
+import type { UserSchema } from "../types.js";
 
 export {};
 

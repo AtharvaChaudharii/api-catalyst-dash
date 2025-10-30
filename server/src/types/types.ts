@@ -13,7 +13,10 @@ export interface LogSchema {
 export interface UserSchema {
     _id: string;
     email: string;
-    api_key: string;
+    password_hash: string;
+    api_key_hash?: string;
+    api_key_encrypted_once?: string;
+    api_key_retrieved?: boolean;
     config: {
         ttl: number;
         autoEviction: boolean;

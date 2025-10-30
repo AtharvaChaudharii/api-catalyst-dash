@@ -7,10 +7,23 @@ const userSchema = new Schema<UserSchema>({
         required: true,
         unique: true
     },
-    api_key: {
+    password_hash: {
         type: String,
         required: true,
-        unique: true
+    },
+    api_key_hash: {
+        type: String,
+        required: false,
+        unique: true,
+        sparse: true,
+    },
+    api_key_encrypted_once: {
+        type: String,
+        required: false,
+    },
+    api_key_retrieved: {
+        type: Boolean,
+        default: false,
     },
     config : {
         ttl : {
