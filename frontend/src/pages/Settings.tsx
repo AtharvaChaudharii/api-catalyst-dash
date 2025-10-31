@@ -11,7 +11,6 @@ import { toast } from "@/hooks/use-toast";
 import DashboardLayout from "@/components/DashboardLayout";
 
 const Settings = () => {
-  const [showApiKey, setShowApiKey] = useState(false);
   const [profile, setProfile] = useState({
     name: "John Doe",
     email: "john@example.com",
@@ -23,32 +22,6 @@ const Settings = () => {
     autoEviction: true,
   });
 
-  const apiKeys = [
-    {
-      id: 1,
-      name: "Production Key",
-      key: "ak_live_1234567890abcdef1234567890abcdef",
-      created: "2024-01-01",
-      lastUsed: "2024-01-15",
-      status: "active",
-    },
-    {
-      id: 2,
-      name: "Development Key",
-      key: "ak_test_abcdef1234567890abcdef1234567890",
-      created: "2024-01-10",
-      lastUsed: "2024-01-14",
-      status: "active",
-    },
-  ];
-
-  const copyApiKey = (key: string) => {
-    navigator.clipboard.writeText(key);
-    toast({
-      title: "API Key Copied!",
-      description: "The API key has been copied to your clipboard.",
-    });
-  };
 
   const handleProfileUpdate = () => {
     toast({
@@ -70,7 +43,7 @@ const Settings = () => {
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
           <p className="text-muted-foreground">
-            Manage your account, API keys, and cache configuration
+            Manage your account and cache configuration
           </p>
         </div>
 
@@ -117,70 +90,6 @@ const Settings = () => {
           </CardContent>
         </Card>
 
-        {/* API Keys */}
-        <Card className="bg-gradient-card shadow-md">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              API Keys
-            </CardTitle>
-            <CardDescription>
-              Manage your API keys for authentication
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex justify-end">
-              <Button>
-                <Plus className="h-4 w-4 mr-2" />
-                Create New Key
-              </Button>
-            </div>
-            <div className="space-y-4">
-              {apiKeys.map((apiKey) => (
-                <div key={apiKey.id} className="p-4 border border-border rounded-lg bg-muted/30">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="font-medium">{apiKey.name}</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Created: {apiKey.created} • Last used: {apiKey.lastUsed}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge 
-                        variant="outline" 
-                        className="bg-success/10 text-success border-success/20"
-                      >
-                        {apiKey.status}
-                      </Badge>
-                      <Button variant="ghost" size="sm">
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 font-mono text-sm bg-background border border-border rounded px-3 py-2">
-                      {showApiKey ? apiKey.key : `${apiKey.key.substring(0, 20)}...`}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowApiKey(!showApiKey)}
-                    >
-                      {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => copyApiKey(apiKey.key)}
-                    >
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Cache Configuration */}
         <Card className="bg-gradient-card shadow-md">

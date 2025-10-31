@@ -4,6 +4,7 @@ import cors from "cors"
 import authRoutes from "./routes/authRoutes.js"
 import dashboardRoutes from "./routes/dashboardRoutes.js"
 import analyticsRoutes from "./routes/analyticsRoutes.js"
+import logsRoutes from "./routes/logsRoutes.js"
 
 const app = express();
 app.use(cors({
@@ -17,6 +18,7 @@ app.use(express.urlencoded({
 app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/logs", logsRoutes);
 
 app.get("/", (req: Request, res: Response) => {
     res.status(200).json({
