@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,9 +12,9 @@ import DashboardLayout from "@/components/DashboardLayout";
 
 const Settings = () => {
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john@example.com",
-    company: "Acme Corp",
+    name: "",
+    email: "",
+    company: "",
   });
   const [cacheSettings, setCacheSettings] = useState({
     defaultTTL: 3600,
@@ -23,11 +23,68 @@ const Settings = () => {
   });
 
 
-  const handleProfileUpdate = () => {
-    toast({
-      title: "Profile Updated",
-      description: "Your profile information has been saved successfully.",
-    });
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\\\/\+^])/g, "\\$1") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = getCookie("token");
+        const res = await fetch("/api/user/profile", {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.success) throw new Error(data?.message || "Failed to fetch profile");
+        setProfile(prev => ({
+          ...prev,
+          name: data.user?.name ?? "",
+          email: data.user?.email ?? "",
+          company: data.user?.company ?? "",
+        }));
+      } catch (e) {
+        // ignore silently for now
+        console.error(e);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  const handleProfileUpdate = async () => {
+    try {
+      const token = getCookie("token");
+      const res = await fetch("/api/user/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ name: profile.name, company: profile.company })
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to update profile");
+      }
+      if (data?.user) {
+        setProfile(prev => ({
+          ...prev,
+          name: data.user.name ?? prev.name,
+          company: data.user.company ?? prev.company,
+          email: prev.email,
+        }));
+      }
+      toast({
+        title: "Profile Updated",
+        description: "Your profile information has been saved successfully.",
+      });
+    } catch (e: any) {
+      toast({
+        title: "Update failed",
+        description: e?.message || "An error occurred while updating your profile.",
+        // variant could be destructive if available in your toast system
+      });
+    }
   };
 
   const handleCacheSettingsUpdate = () => {
@@ -75,6 +132,7 @@ const Settings = () => {
                   type="email"
                   value={profile.email}
                   onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
+                  disabled
                 />
               </div>
               <div className="space-y-2 md:col-span-2">

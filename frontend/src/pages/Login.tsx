@@ -12,10 +12,31 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const setCookie = (name: string, value: string, days: number) => {
+    const maxAge = days * 24 * 60 * 60;
+    document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login success
-    navigate("/dashboard");
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || "Login failed");
+      }
+      if (data?.token) {
+        setCookie("token", data.token, 7);
+      }
+      navigate("/dashboard");
+    } catch (err) {
+      // Optionally surface error to user; keeping it minimal for now
+      console.error(err);
+    }
   };
 
   return (

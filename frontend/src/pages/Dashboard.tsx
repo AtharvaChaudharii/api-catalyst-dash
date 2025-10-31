@@ -1,18 +1,54 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Activity, Clock, Shield, Zap } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 
-const data = [
-  { name: "00:00", requests: 4000 },
-  { name: "04:00", requests: 3000 },
-  { name: "08:00", requests: 8000 },
-  { name: "12:00", requests: 12000 },
-  { name: "16:00", requests: 9000 },
-  { name: "20:00", requests: 6000 },
-];
+const formatTime = (iso: string) => {
+  const d = new Date(iso);
+  const hh = String(d.getHours()).padStart(2, "0");
+  return `${hh}:00`;
+};
 
 const Dashboard = () => {
+  const [loading, setLoading] = useState(true);
+  const [totalRequests, setTotalRequests] = useState(0);
+  const [cacheHitRatio, setCacheHitRatio] = useState(0);
+  const [averageLatencySavedMs, setAverageLatencySavedMs] = useState(0);
+  const [apiCallsPrevented, setApiCallsPrevented] = useState(0);
+  const [series, setSeries] = useState<{ name: string; requests: number }[]>([]);
+
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\\\/\+^])/g, "\\$1") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  useEffect(() => {
+    const fetchSummary = async () => {
+      try {
+        const token = getCookie("token");
+        const res = await fetch("/api/dashboard/summary", {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const json = await res.json();
+        if (!res.ok || !json?.success) throw new Error(json?.message || "Failed to load dashboard");
+        const d = json.data;
+        setTotalRequests(d.totalRequests || 0);
+        setCacheHitRatio(d.cacheHitRatio || 0);
+        setAverageLatencySavedMs(d.averageLatencySavedMs || 0);
+        setApiCallsPrevented(d.apiCallsPrevented || 0);
+        const chart = (d.series || []).map((b: any) => ({ name: formatTime(b.bucketStart), requests: b.count }))
+          .sort((a: any, b: any) => a.name.localeCompare(b.name));
+        setSeries(chart);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSummary();
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -31,7 +67,7 @@ const Dashboard = () => {
               <Activity className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">45,231</div>
+              <div className="text-2xl font-bold">{loading ? "—" : totalRequests.toLocaleString()}</div>
             </CardContent>
           </Card>
 
@@ -41,7 +77,7 @@ const Dashboard = () => {
               <Zap className="h-4 w-4 text-accent" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">94.2%</div>
+              <div className="text-2xl font-bold">{loading ? "—" : `${cacheHitRatio.toFixed(1)}%`}</div>
             </CardContent>
           </Card>
 
@@ -51,7 +87,7 @@ const Dashboard = () => {
               <Clock className="h-4 w-4 text-warning" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">284ms</div>
+              <div className="text-2xl font-bold">{loading ? "—" : `${Math.round(averageLatencySavedMs)}ms`}</div>
             </CardContent>
           </Card>
 
@@ -61,7 +97,7 @@ const Dashboard = () => {
               <Shield className="h-4 w-4 text-success" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">38,291</div>
+              <div className="text-2xl font-bold">{loading ? "—" : apiCallsPrevented.toLocaleString()}</div>
             </CardContent>
           </Card>
         </div>
@@ -76,7 +112,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={data}>
+              <LineChart data={series}>
                 <CartesianGrid strokeDasharray="3 3" className="opacity-30" />
                 <XAxis dataKey="name" />
                 <YAxis />

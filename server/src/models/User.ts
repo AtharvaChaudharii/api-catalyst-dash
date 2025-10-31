@@ -2,6 +2,16 @@ import mongoose, { Schema } from "mongoose"
 import type { UserSchema } from "../types/types.js"
 
 const userSchema = new Schema<UserSchema>({
+    name: {
+        type: String,
+        required: false,
+        default: ""
+    },
+    company: {
+        type: String,
+        required: false,
+        default: ""
+    },
     email: {
         type: String,
         required: true,

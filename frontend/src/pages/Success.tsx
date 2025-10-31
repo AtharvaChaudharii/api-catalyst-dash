@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -6,7 +6,35 @@ import { CheckCircle, Copy, Zap, Terminal, ArrowRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const Success = () => {
-  const [apiKey] = useState("ak_live_1234567890abcdef1234567890abcdef");
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\\\/\+^])/g, "\\$1") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const token = getCookie("token");
+        if (!token) throw new Error("No auth token");
+        const res = await fetch("/api/auth/one-time-api-key", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.success) {
+          throw new Error(data?.message || "Failed to fetch API key");
+        }
+        setApiKey(data.apiKey || null);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchApiKey();
+  }, []);
 
   const copyApiKey = () => {
     navigator.clipboard.writeText(apiKey);
@@ -42,12 +70,15 @@ const Success = () => {
             <div className="space-y-3">
               <h3 className="text-white font-semibold">Your API Key</h3>
               <div className="flex items-center gap-2 p-3 bg-black/20 rounded-lg border border-white/20">
-                <code className="flex-1 text-white font-mono text-sm">{apiKey}</code>
+                <code className="flex-1 text-white font-mono text-sm">
+                  {loading ? "Fetching your API key..." : (apiKey ?? "Already retrieved or unavailable")}
+                </code>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={copyApiKey}
                   className="text-white hover:bg-white/10"
+                  disabled={!apiKey}
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
@@ -65,7 +96,7 @@ const Success = () => {
               <div className="bg-black/20 rounded-lg p-4 border border-white/20">
                 <p className="text-white/70 text-sm mb-3">Install the SDK:</p>
                 <code className="block text-white font-mono text-sm bg-black/30 p-2 rounded">
-                  npm install @api-catalyst/sdk
+                  npm install api-catalyst
                 </code>
                 <p className="text-white/70 text-sm mt-3 mb-2">Initialize in your code:</p>
                 <code className="block text-white font-mono text-sm bg-black/30 p-2 rounded">
@@ -86,7 +117,7 @@ const Success = () => {
                 className="flex-1 border-white/30 text-white hover:bg-white/10"
                 asChild
               >
-                <a href="https://docs.apicatalyst.com" target="_blank" rel="noopener noreferrer">
+                <a href="" target="_blank" rel="noopener noreferrer">
                   View Documentation
                 </a>
               </Button>

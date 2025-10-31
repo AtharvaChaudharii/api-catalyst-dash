@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   LineChart, 
@@ -16,37 +17,82 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import DashboardLayout from "@/components/DashboardLayout";
 
-const hitMissData = [
-  { time: "00:00", hits: 3200, misses: 800 },
-  { time: "04:00", hits: 2400, misses: 600 },
-  { time: "08:00", hits: 6400, misses: 1600 },
-  { time: "12:00", hits: 9600, misses: 2400 },
-  { time: "16:00", hits: 7200, misses: 1800 },
-  { time: "20:00", hits: 4800, misses: 1200 },
-];
+const formatTime = (iso: string) => {
+  const d = new Date(iso);
+  const hh = String(d.getHours()).padStart(2, "0");
+  return `${hh}:00`;
+};
 
-const responseTimeData = [
-  { endpoint: "/api/users", saved: 320 },
-  { endpoint: "/api/products", saved: 280 },
-  { endpoint: "/api/orders", saved: 450 },
-  { endpoint: "/api/auth", saved: 180 },
-  { endpoint: "/api/analytics", saved: 380 },
-];
+type HitMissPoint = { time: string; hits: number; misses: number };
+type TopEndpointRow = { endpoint: string; requests: number; cacheHitRatio: number };
+type LatencySavedRow = { endpoint: string; saved: number };
+
+const responseTimeDataStatic: LatencySavedRow[] = [];
 
 const rateLimitData = [
   { name: "Available", value: 85, color: "hsl(var(--success))" },
   { name: "Used", value: 15, color: "hsl(var(--warning))" },
 ];
 
-const topEndpoints = [
-  { endpoint: "/api/users", requests: 15420, cacheHit: "94.2%" },
-  { endpoint: "/api/products", requests: 12380, cacheHit: "91.8%" },
-  { endpoint: "/api/orders", requests: 8950, cacheHit: "96.1%" },
-  { endpoint: "/api/auth", requests: 7640, cacheHit: "88.3%" },
-  { endpoint: "/api/analytics", requests: 5280, cacheHit: "92.7%" },
-];
+const topEndpointsStatic: TopEndpointRow[] = [];
 
 const Analytics = () => {
+  const [loading, setLoading] = useState(true);
+  const [hitMissData, setHitMissData] = useState<HitMissPoint[]>([]);
+  const [topEndpoints, setTopEndpoints] = useState<TopEndpointRow[]>(topEndpointsStatic);
+  const [responseTimeData, setResponseTimeData] = useState<LatencySavedRow[]>(responseTimeDataStatic);
+
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\\\/\+^])/g, "\\$1") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const token = getCookie("token");
+        const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+        const [hitMissRes, topRes, latencyRes] = await Promise.all([
+          fetch("/api/analytics/hit-miss-series", { headers }),
+          fetch("/api/analytics/top-endpoints", { headers }),
+          fetch("/api/analytics/latency-saved", { headers })
+        ]);
+
+        const [hitMissJson, topJson, latencyJson] = await Promise.all([
+          hitMissRes.json(), topRes.json(), latencyRes.json()
+        ]);
+
+        if (hitMissRes.ok && hitMissJson?.success) {
+          const arr = (hitMissJson.data || [])
+            .map((p: any) => ({ time: formatTime(p.bucketStart), hits: p.hits, misses: p.misses }))
+            .sort((a: HitMissPoint, b: HitMissPoint) => a.time.localeCompare(b.time));
+          setHitMissData(arr);
+        }
+
+        if (topRes.ok && topJson?.success) {
+          const arr: TopEndpointRow[] = (topJson.data || []).map((r: any) => ({
+            endpoint: r.endpoint,
+            requests: r.requests,
+            cacheHitRatio: r.cacheHitRatio || 0
+          }));
+          setTopEndpoints(arr);
+        }
+
+        if (latencyRes.ok && latencyJson?.success) {
+          const arr: LatencySavedRow[] = (latencyJson.data || []).map((r: any) => ({
+            endpoint: r.endpoint,
+            saved: r.saved || 0
+          }));
+          setResponseTimeData(arr);
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
+  }, []);
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -112,7 +158,7 @@ const Analytics = () => {
                     <TableRow key={index}>
                       <TableCell className="font-mono text-sm">{endpoint.endpoint}</TableCell>
                       <TableCell>{endpoint.requests.toLocaleString()}</TableCell>
-                      <TableCell className="text-success font-medium">{endpoint.cacheHit}</TableCell>
+                      <TableCell className="text-success font-medium">{`${endpoint.cacheHitRatio.toFixed(1)}%`}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

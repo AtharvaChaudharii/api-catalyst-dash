@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,80 +8,25 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, Filter, Download, CheckCircle, XCircle, Clock } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 
-const logs = [
-  {
-    id: 1,
-    timestamp: "2024-01-15 14:32:15",
-    endpoint: "/api/users/123",
-    method: "GET",
-    status: "HIT",
-    latency: 45,
-    statusCode: 200,
-  },
-  {
-    id: 2,
-    timestamp: "2024-01-15 14:31:58",
-    endpoint: "/api/products",
-    method: "GET",
-    status: "MISS",
-    latency: 320,
-    statusCode: 200,
-  },
-  {
-    id: 3,
-    timestamp: "2024-01-15 14:31:42",
-    endpoint: "/api/orders/456",
-    method: "POST",
-    status: "HIT",
-    latency: 28,
-    statusCode: 201,
-  },
-  {
-    id: 4,
-    timestamp: "2024-01-15 14:31:21",
-    endpoint: "/api/auth/login",
-    method: "POST",
-    status: "MISS",
-    latency: 180,
-    statusCode: 200,
-  },
-  {
-    id: 5,
-    timestamp: "2024-01-15 14:30:55",
-    endpoint: "/api/analytics",
-    method: "GET",
-    status: "HIT",
-    latency: 52,
-    statusCode: 200,
-  },
-  {
-    id: 6,
-    timestamp: "2024-01-15 14:30:33",
-    endpoint: "/api/users",
-    method: "GET",
-    status: "HIT",
-    latency: 38,
-    statusCode: 200,
-  },
-  {
-    id: 7,
-    timestamp: "2024-01-15 14:30:15",
-    endpoint: "/api/products/789",
-    method: "PUT",
-    status: "MISS",
-    latency: 425,
-    statusCode: 200,
-  },
-  {
-    id: 8,
-    timestamp: "2024-01-15 14:29:58",
-    endpoint: "/api/orders",
-    method: "GET",
-    status: "HIT",
-    latency: 31,
-    statusCode: 200,
-  },
-];
+type LogRow = {
+  timestamp: string;
+  endpoint: string;
+  method: string;
+  cacheHit: boolean;
+  latencyMs: number;
+  statusCode: number;
+};
+
+const formatTimestamp = (ts: string | Date) => {
+  const d = new Date(ts);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const hh = String(d.getHours()).padStart(2, "0");
+  const mi = String(d.getMinutes()).padStart(2, "0");
+  const ss = String(d.getSeconds()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}:${ss}`;
+};
 
 const getStatusIcon = (status: string) => {
   if (status === "HIT") return <CheckCircle className="h-4 w-4 text-success" />;
@@ -123,13 +68,45 @@ const Logs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [methodFilter, setMethodFilter] = useState("all");
+  const [page, setPage] = useState(1);
+  const [limit] = useState(25);
+  const [rows, setRows] = useState<LogRow[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  const filteredLogs = logs.filter(log => {
-    const matchesSearch = log.endpoint.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === "all" || log.status === statusFilter;
-    const matchesMethod = methodFilter === "all" || log.method === methodFilter;
-    return matchesSearch && matchesStatus && matchesMethod;
-  });
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\\\/\+^])/g, "\\$1") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        setLoading(true);
+        const token = getCookie("token");
+        const params = new URLSearchParams();
+        params.set("page", String(page));
+        params.set("limit", String(limit));
+        if (statusFilter !== "all") params.set("status", statusFilter);
+        if (methodFilter !== "all") params.set("method", methodFilter);
+        if (searchTerm) params.set("search", searchTerm);
+        const res = await fetch(`/api/logs?${params.toString()}` , {
+          headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        });
+        const json = await res.json();
+        if (!res.ok || !json?.success) throw new Error(json?.message || "Failed to fetch logs");
+        setRows((json.data || []) as LogRow[]);
+        setTotal(json.pagination?.total || 0);
+      } catch (e) {
+        console.error(e);
+        setRows([]);
+        setTotal(0);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchLogs();
+  }, [searchTerm, statusFilter, methodFilter, page, limit]);
 
   return (
     <DashboardLayout>
@@ -202,7 +179,7 @@ const Logs = () => {
           <CardHeader>
             <CardTitle>Request Logs</CardTitle>
             <CardDescription>
-              Showing {filteredLogs.length} of {logs.length} requests
+            {loading ? "Loading..." : `Showing ${rows.length} of ${total} requests`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -219,32 +196,36 @@ const Logs = () => {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredLogs.map((log) => (
-                    <TableRow key={log.id}>
-                      <TableCell className="font-mono text-sm">
-                        {log.timestamp}
-                      </TableCell>
-                      <TableCell className="font-mono text-sm">
-                        {log.endpoint}
-                      </TableCell>
-                      <TableCell>
-                        {getMethodBadge(log.method)}
-                      </TableCell>
-                      <TableCell>
-                        {getStatusBadge(log.status)}
-                      </TableCell>
-                      <TableCell>
-                        <span className={log.latency < 100 ? "text-success" : log.latency < 300 ? "text-warning" : "text-destructive"}>
-                          {log.latency}ms
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline" className="bg-muted/50">
-                          {log.statusCode}
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {rows.map((log, idx) => {
+                    const status = log.cacheHit ? "HIT" : "MISS";
+                    const latency = log.latencyMs ?? 0;
+                    return (
+                      <TableRow key={`${log.timestamp}-${idx}`}>
+                        <TableCell className="font-mono text-sm">
+                          {formatTimestamp(log.timestamp)}
+                        </TableCell>
+                        <TableCell className="font-mono text-sm">
+                          {log.endpoint}
+                        </TableCell>
+                        <TableCell>
+                          {getMethodBadge(log.method)}
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(status)}
+                        </TableCell>
+                        <TableCell>
+                          <span className={latency < 100 ? "text-success" : latency < 300 ? "text-warning" : "text-destructive"}>
+                            {latency}ms
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-muted/50">
+                            {log.statusCode}
+                          </Badge>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>

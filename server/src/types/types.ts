@@ -12,6 +12,8 @@ export interface LogSchema {
 
 export interface UserSchema {
     _id: string;
+    name?: string;
+    company?: string;
     email: string;
     password_hash: string;
     api_key_hash?: string;

@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { 
@@ -38,6 +38,32 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
   const { theme, setTheme } = useTheme();
+  const [userName, setUserName] = useState("John Doe");
+  const [userEmail, setUserEmail] = useState("john@example.com");
+
+  const getCookie = (name: string) => {
+    const match = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\\\/\+^])/g, "\\$1") + "=([^;]*)"));
+    return match ? decodeURIComponent(match[1]) : null;
+  };
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = getCookie("token");
+        if (!token) return;
+        const res = await fetch("/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.success) return;
+        setUserName(data.user?.name || "");
+        setUserEmail(data.user?.email || "");
+      } catch {
+        // ignore
+      }
+    };
+    fetchProfile();
+  }, []);
 
   const isActive = (href: string) => location.pathname === href;
 
@@ -96,8 +122,8 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                     <User className="h-4 w-4 text-primary" />
                   </div>
                   <div className="text-left">
-                    <p className="text-sm font-medium">John Doe</p>
-                    <p className="text-xs text-muted-foreground">john@example.com</p>
+                    <p className="text-sm font-medium">{userName || ""}</p>
+                    <p className="text-xs text-muted-foreground">{userEmail || ""}</p>
                   </div>
                 </Button>
               </DropdownMenuTrigger>
@@ -107,11 +133,15 @@ const DashboardLayout = ({ children }: DashboardLayoutProps) => {
                   Toggle theme
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/">
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Sign out
-                  </Link>
+                <DropdownMenuItem
+                  onClick={() => {
+                    // remove token cookie
+                    document.cookie = "token=; Path=/; Max-Age=0; SameSite=Lax";
+                    window.location.href = "/";
+                  }}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
