@@ -32,9 +32,6 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">45,231</div>
-              <p className="text-xs text-success">
-                +20.1% from last month
-              </p>
             </CardContent>
           </Card>
 
@@ -45,9 +42,6 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">94.2%</div>
-              <p className="text-xs text-success">
-                +2.4% from last month
-              </p>
             </CardContent>
           </Card>
 
@@ -58,9 +52,6 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">284ms</div>
-              <p className="text-xs text-success">
-                +12ms from last month
-              </p>
             </CardContent>
           </Card>
 
@@ -71,9 +62,6 @@ const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">38,291</div>
-              <p className="text-xs text-success">
-                +15.3% from last month
-              </p>
             </CardContent>
           </Card>
         </div>
