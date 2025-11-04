@@ -78,22 +78,22 @@ export const login = async (req: Request, res: Response) => {
 
 export const getOneTimeApiKey = async (req: Request, res: Response) => {
     try {
-        const userId = req.user._id;
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ success: false, message: "User not found" });
-        }
-        if (user.api_key_retrieved || !user.api_key_encrypted_once) {
-            return res.status(410).json({ success: false, message: "API key already retrieved" });
-        }
-
+        const user = await User.findById(req.user._id);
+        if (!user) return res.status(404).json({
+            success: false,
+            message: "User not found"
+        })
+        if (user.api_key_retrieved || !user.api_key_encrypted_once) return res.status(404).json({
+            success: false,
+            message: "Api key already retrieved"
+        })
         const apiKeyPlain = decrypt(user.api_key_encrypted_once);
-        user.api_key_encrypted_once = undefined as unknown as string;
         user.api_key_retrieved = true;
+        user.api_key_encrypted_once = "";
         await user.save();
-
         return res.status(200).json({ success: true, apiKey: apiKeyPlain });
     } catch (error) {
+        console.error(error)
         return res.status(500).json({ success: false, message: "Failed to fetch API key" });
     }
 };
